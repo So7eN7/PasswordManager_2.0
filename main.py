@@ -3,7 +3,34 @@ from tkinter import *
 screen = Tk()
 screen.title("Password Manager")
 
+def firstLogin():
+    screen.geometry("400x200+50+50")
+    label = Label(screen, text="Create Master Password")
+    label.config(anchor=CENTER)
+    label.pack()
 
+    passEntry = Entry(screen, width=20)
+    passEntry.focus()
+    passEntry.pack()
+
+    repeatLabel = Label(screen, text="Repeat Password")
+    repeatLabel.pack()
+
+    repeatEntry = Entry(screen, width=20)
+    repeatEntry.pack()
+    repeatEntry.focus()
+
+    errorLabel = Label(screen)
+    errorLabel.pack()
+
+    def savePassword():
+        if passEntry.get() == repeatEntry.get():
+            pass
+        else:
+            errorLabel.config(text="Passwords do not match")
+
+    button = Button(screen, text="Login", command=savePassword)
+    button.pack(pady=10)
 
 def loginScreen():
     screen.geometry("400x200+50+50")
@@ -11,9 +38,9 @@ def loginScreen():
     label.config(anchor=CENTER)
     label.pack()
 
-    text = Entry(screen, width=20, show="*")
-    text.focus()
-    text.pack()
+    passEntry = Entry(screen, width=20, show="*")
+    passEntry.focus()
+    passEntry.pack()
 
     passLabel = Label(screen)
     passLabel.pack()
@@ -21,10 +48,10 @@ def loginScreen():
     def checkPassword():
         password = "password"
 
-        if password == text.get():
+        if password == passEntry.get():
             mainScreen()
         else:
-            text.delete(0, 'end')
+            passEntry.delete(0, 'end')
             passLabel.config(text="Wrong Password")
 
     button = Button(screen, text="Login", command=checkPassword)
@@ -47,5 +74,5 @@ def mainScreen():
     generatePassword = Button(text="Generate Password")
     generatePassword.grid(row=1, column=3)
 '''
-loginScreen()
+firstLogin()
 screen.mainloop()
