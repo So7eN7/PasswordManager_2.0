@@ -1,7 +1,22 @@
 from tkinter import *
+from tkinter import messagebox
+import sqlite3
+
+with sqlite3.connect("password_manager.db") as db:
+    cursor = db.cursor()
+
+cursor.execute\
+("""
+CREATE TABLE IF NOT EXISTS master_password
+(
+id INTEGER PRIMARY KEY,
+password TEXT NOT NULL
+);
+""")
 
 screen = Tk()
 screen.title("Password Manager")
+
 
 def firstLogin():
     screen.geometry("400x200+50+50")
@@ -25,11 +40,15 @@ def firstLogin():
 
     def savePassword():
         if passEntry.get() == repeatEntry.get():
-            pass
+            passwordHash = passEntry.get()
+            passwordInput = """INSERT INTO master_password(password) VALUES(?)"""
+            cursor.execute(passwordInput, [(passwordHash)])
+            db.commit()
+            messagebox.showinfo(title="Success!", message="Password created successfully, please restart the app")
         else:
             errorLabel.config(text="Passwords do not match")
 
-    button = Button(screen, text="Login", command=savePassword)
+    button = Button(screen, text="Create", command=savePassword)
     button.pack(pady=10)
 
 def loginScreen():
@@ -45,10 +64,14 @@ def loginScreen():
     passLabel = Label(screen)
     passLabel.pack()
 
+    def getMasterPassword():
+        masterHashChecking = passEntry.get()
+        cursor.execute("SELECT * FROM master_password WHERE id = 1 and password = ?", [(masterHashChecking)])
+        return cursor.fetchall()
     def checkPassword():
-        password = "password"
+        passCheck = getMasterPassword()
 
-        if password == passEntry.get():
+        if passCheck:
             mainScreen()
         else:
             passEntry.delete(0, 'end')
@@ -74,5 +97,11 @@ def mainScreen():
     generatePassword = Button(text="Generate Password")
     generatePassword.grid(row=1, column=3)
 '''
-firstLogin()
+
+
+cursor.execute("SELECT * FROM master_password")
+if cursor.fetchall():
+    loginScreen()
+else:
+    firstLogin()
 screen.mainloop()
