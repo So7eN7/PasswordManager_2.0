@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import sqlite3
+import hashlib
 
 with sqlite3.connect("password_manager.db") as db:
     cursor = db.cursor()
@@ -17,6 +18,11 @@ password TEXT NOT NULL
 screen = Tk()
 screen.title("Password Manager")
 
+
+def hashPassword(input):
+    hashPass = hashlib.md5(input)
+    hashPass = hashPass.hexdigest()
+    return hashPass
 
 def firstLogin():
     screen.geometry("400x200+50+50")
@@ -40,7 +46,7 @@ def firstLogin():
 
     def savePassword():
         if passEntry.get() == repeatEntry.get():
-            passwordHash = passEntry.get()
+            passwordHash = hashPassword(repeatEntry.get().encode('utf-8'))
             passwordInput = """INSERT INTO master_password(password) VALUES(?)"""
             cursor.execute(passwordInput, [(passwordHash)])
             db.commit()
@@ -65,7 +71,7 @@ def loginScreen():
     passLabel.pack()
 
     def getMasterPassword():
-        masterHashChecking = passEntry.get()
+        masterHashChecking = hashPassword(passEntry.get().encode('utf-8'))
         cursor.execute("SELECT * FROM master_password WHERE id = 1 and password = ?", [(masterHashChecking)])
         return cursor.fetchall()
     def checkPassword():
