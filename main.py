@@ -1,8 +1,8 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter import messagebox
 import sqlite3
 import hashlib
-
 with sqlite3.connect("password_manager.db") as db:
     cursor = db.cursor()
 
@@ -46,7 +46,7 @@ def firstLogin():
 
     def savePassword():
         if passEntry.get() == repeatEntry.get():
-            passwordHash = hashPassword(repeatEntry.get().encode('utf-8'))
+            passwordHash = hashPassword(passEntry.get().encode('utf-8'))
             passwordInput = """INSERT INTO master_password(password) VALUES(?)"""
             cursor.execute(passwordInput, [(passwordHash)])
             db.commit()
@@ -91,19 +91,39 @@ def mainScreen():
     for widget in screen.winfo_children():
         widget.destroy()
 
-    screen.geometry("800x500+50+50")
-    label = Label(screen, text="Password Manager", pady=20, font=("Arial", 20))
-    label.grid(row=0, column=0, padx=280)
+    screen.geometry("900x600+50+50")
+    title = Label(screen, text="Password Manager", width=40, font=("Ariel", 20)).grid(columnspan=4, padx=140, pady=10)
 
-'''
-    add = Button(text="Add")
-    add.grid(row=1, column=1)
-    delete = Button(text="Delete")
-    delete.grid(row=1, column=2)
-    generatePassword = Button(text="Generate Password")
-    generatePassword.grid(row=1, column=3)
-'''
+    screenFrame = ttk.Frame(screen, padding=50)
+    screenFrame.grid()
 
+    def menuLabels():
+        column_num = 0
+        labels = ('ID', 'Website', 'Username', 'Password')
+        for label in labels:
+            Label(screenFrame, text=label, bg="grey", fg="white", font=("Ariel", 12), padx=5, pady=2).grid(
+                padx=5, pady=2, column=column_num, row=0)
+            column_num += 1
+    def userInputs():
+        user_inputs = []
+        column_num = 0
+        for i in range(4):
+            user_input = Entry(screenFrame, width=20, background="lightgray", font=("Ariel", 12))
+            user_input.grid(row=1, column=column_num, padx=5, pady=2)
+            column_num += 1
+            user_inputs.append(user_input)
+
+    def createButtons():
+        column_num = 0
+        buttons = (('Save', 'lightgreen'), ('Update', 'lightblue'), ('Delete', 'red'), ('Generate', 'orange'))
+        for button in buttons:
+            Button(screenFrame, text=button[0], bg=button[1], fg="white", font=("Ariel", 12), padx=5, pady=2, width=20).grid(
+                padx=5, pady=2, column=column_num, row=2)
+            column_num += 1
+
+    menuLabels()
+    userInputs()
+    createButtons()
 
 cursor.execute("SELECT * FROM master_password")
 if cursor.fetchall():
