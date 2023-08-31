@@ -1,19 +1,9 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import sqlite3
 import hashlib
-with sqlite3.connect("password_manager.db") as db:
-    cursor = db.cursor()
+from database import *
 
-cursor.execute\
-("""
-CREATE TABLE IF NOT EXISTS master_password
-(
-id INTEGER PRIMARY KEY,
-password TEXT NOT NULL
-);
-""")
 
 screen = Tk()
 screen.title("Password Manager")
