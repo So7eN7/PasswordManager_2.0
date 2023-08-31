@@ -18,12 +18,12 @@ class Table:
         connection = sqlite3.connect('password_manager.db')
         return connection
 
-    def createTable(self):
+    def createTable(self, table_name="password_record"):
         connection = self.connect()
-        query = '''
+        query = f'''
         CREATE TABLE IF NOT EXISTS {table_name}
         (
-        ID INT PRIMARY KEY AUTOINCREMENT NOT NULL,
+        ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         website TEXT NOT NULL,
@@ -31,3 +31,6 @@ class Table:
         password VARCHAR(100) DEFAULT NULL
         )
         '''
+        with connection as connection:
+            cursor = connection.cursor()
+            cursor.execute(query)

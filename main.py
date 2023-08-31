@@ -5,6 +5,8 @@ import hashlib
 from database import *
 
 
+database_table = Table()
+database_table.createTable()
 screen = Tk()
 screen.title("Password Manager")
 
