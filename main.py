@@ -97,6 +97,7 @@ def mainScreen():
                 padx=5, pady=2, column=column_num, row=0)
             column_num += 1
     def userInputs():
+        global user_inputs
         user_inputs = []
         column_num = 0
         for i in range(4):
@@ -106,12 +107,35 @@ def mainScreen():
             user_inputs.append(user_input)
 
     def createButtons():
+        row_num = 2
         column_num = 0
-        buttons = (('Save', 'lightgreen'), ('Update', 'lightblue'), ('Delete', 'red'), ('Generate', 'orange'))
+        buttons = (('Save', 'lightgreen', saveRecord), ('Update', 'lightblue', updateRecord),
+                   ('Delete', 'red', deleteRecord), ('Generate', 'orange', generatePassword),
+                   ('Show Records', 'midnightblue', showRecord))
         for button in buttons:
-            Button(screenFrame, text=button[0], bg=button[1], fg="white", font=("Ariel", 12), padx=5, pady=2, width=20).grid(
-                padx=5, pady=2, column=column_num, row=2)
+            if button[0] == "Show Records":
+                column_num = 0
+                row_num = 3
+            Button(screenFrame, text=button[0], bg=button[1], fg="white", font=("Ariel", 12), padx=5, pady=5, width=20,
+                   command=button[2]).grid(padx=5, pady=10, column=column_num, row=row_num)
             column_num += 1
+
+    def saveRecord():
+        website = user_inputs[1].get()
+        username = user_inputs[2].get()
+        password = user_inputs[3].get()
+        record_data = {'website': website, 'username': username, 'password': password}
+        database_table.createRecord(record_data)
+    def deleteRecord():
+        pass
+    def updateRecord():
+        pass
+    def showRecord():
+        record_list = database_table.showRecord()
+        for record in record_list:
+            print(record)
+    def generatePassword():
+        pass
 
     menuLabels()
     userInputs()

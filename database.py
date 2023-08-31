@@ -29,8 +29,30 @@ class Table:
         website TEXT NOT NULL,
         username VARCHAR(100) DEFAULT NULL,
         password VARCHAR(100) DEFAULT NULL
-        )
+        );
         '''
         with connection as connection:
             cursor = connection.cursor()
             cursor.execute(query)
+
+    def createRecord(self, record_data, table_name="password_record"):
+        website = record_data['website']
+        username = record_data['username']
+        password = record_data['password']
+        connection = self.connect()
+        query = f'''
+                INSERT INTO {table_name} ('website', 'username', 'password') VALUES ( ?, ?, ? );
+                '''
+        with connection as connection:
+            cursor = connection.cursor()
+            cursor.execute(query, (website, username, password))
+
+    def showRecord(self, table_name="password_record"):
+        connection = self.connect()
+        query = f'''
+                SELECT * FROM {table_name} 
+                '''
+        with connection as connection:
+            cursor = connection.cursor()
+            record_list = cursor.execute(query)
+            return record_list
