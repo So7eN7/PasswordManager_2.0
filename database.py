@@ -12,3 +12,22 @@ password TEXT NOT NULL
 );
 """)
 
+class Table:
+
+    def connect(self):
+        connection = sqlite3.connect('password_manager.db')
+        return connection
+
+    def createTable(self):
+        connection = self.connect()
+        query = '''
+        CREATE TABLE IF NOT EXISTS {table_name}
+        (
+        ID INT PRIMARY KEY AUTOINCREMENT NOT NULL,
+        created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        website TEXT NOT NULL,
+        username VARCHAR(100) DEFAULT NULL,
+        password VARCHAR(100) DEFAULT NULL
+        )
+        '''
