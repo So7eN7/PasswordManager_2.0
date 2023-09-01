@@ -131,9 +131,15 @@ def mainScreen():
         record_data = {'website': website, 'username': username, 'password': password}
         database_table.createRecord(record_data)
     def deleteRecord():
-        pass
+        ID = user_inputs[0].get()
+        database_table.deleteRecord(ID)
     def updateRecord():
-        pass
+        ID = user_inputs[0].get()
+        website = user_inputs[1].get()
+        username = user_inputs[2].get()
+        password = user_inputs[3].get()
+        record_data = {'ID': ID,'website': website, 'username': username, 'password': password}
+        database_table.updateRecord(record_data)
     def showRecord():
         record_list = database_table.showRecord()
         for record in record_list:

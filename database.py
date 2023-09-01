@@ -56,3 +56,25 @@ class Table:
             cursor = connection.cursor()
             record_list = cursor.execute(query)
             return record_list
+
+    def updateRecord(self, record_data, table_name="password_record"):
+        ID = record_data['ID']
+        website = record_data['website']
+        username = record_data['username']
+        password = record_data['password']
+        connection = self.connect()
+        query = f'''
+                UPDATE {table_name} SET website = ?, username = ?, password = ? WHERE ID = ?;
+                '''
+        with connection as connection:
+            cursor = connection.cursor()
+            cursor.execute(query, (website, username, password, ID))
+
+    def deleteRecord(self, ID, table_name="password_record"):
+        connection = self.connect()
+        query = f'''
+                DELETE FROM {table_name} WHERE ID ?;
+                '''
+        with connection as connection:
+            cursor = connection.cursor()
+            cursor.execute(query, (ID,))
