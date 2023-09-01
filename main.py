@@ -88,6 +88,10 @@ def mainScreen():
 
     screenFrame = ttk.Frame(screen, padding=50)
     screenFrame.grid()
+    searchBox = Entry(screenFrame, width=30, font=("Ariel", 10))
+    searchBox.grid(row=3, column=1)
+    searchButton = Button(screenFrame, text="Search", bg="aqua", width=20 ,font=("Ariel", 12)).grid(
+        row=3, column=2, padx=5, pady=5)
 
     def menuLabels():
         column_num = 0
