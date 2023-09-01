@@ -3,7 +3,8 @@ from tkinter import ttk
 from tkinter import messagebox
 import hashlib
 from database import *
-
+import string
+import random
 
 database_table = Table()
 database_table.createTable()
@@ -171,7 +172,20 @@ def mainScreen():
             # If we use 1,2 instead of 3,4,5 we will get creation dates which we don't need
 
     def generatePassword():
-        pass
+        # From string module we set our letters/numbers/symbols
+        letters = string.ascii_letters
+        numbers = string.digits
+        symbols = string.punctuation
+        # List comprehension really helps us here. We fill our lists here
+        password_letters = [random.choice(letters) for i in range(random.randint(8, 10))]
+        password_numbers = [random.choice(numbers) for i in range(random.randint(2, 4))]
+        password_symbols = [random.choice(symbols) for i in range(random.randint(2, 4))]
+        # Combining our lists and shuffling them
+        password_list = password_letters + password_numbers + password_symbols
+        random.shuffle(password_list)
+        # Make a string and put it inside the password box
+        password = "".join(password_list)
+        user_inputs[3].insert(0, password)
 
     menuLabels()
     userInputs()
