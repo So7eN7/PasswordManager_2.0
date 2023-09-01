@@ -151,6 +151,16 @@ def mainScreen():
         record_tree.heading('Username', text="Username")
         record_tree.heading('Password', text="Password")
         record_tree['displaycolumns'] = ('ID', 'Website', 'Username', 'Password')
+        def recordSelection(event):
+            for selected in record_tree.selection():
+                selection = record_tree.item(selected)
+                record = selection['values']
+                for user_input, selection in zip(user_inputs, record):
+                    user_input.delete(0, END)
+                    user_input.insert(0, selection)
+
+        record_tree.bind('<<TreeviewSelect>>', recordSelection)
+
         record_tree.grid()
     def showRecord():
         for record in record_tree.get_children():
@@ -159,6 +169,7 @@ def mainScreen():
         for record in record_list:
             record_tree.insert('', END, values=(record[0], record[3], record[4], record[5]))
             # If we use 1,2 instead of 3,4,5 we will get creation dates which we don't need
+
     def generatePassword():
         pass
 

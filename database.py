@@ -73,7 +73,7 @@ class Table:
     def deleteRecord(self, ID, table_name="password_record"):
         connection = self.connect()
         query = f'''
-                DELETE FROM {table_name} WHERE ID ?;
+                DELETE  FROM {table_name} WHERE ID = ?;
                 '''
         with connection as connection:
             cursor = connection.cursor()
