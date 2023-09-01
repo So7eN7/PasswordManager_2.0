@@ -130,9 +130,11 @@ def mainScreen():
         password = user_inputs[3].get()
         record_data = {'website': website, 'username': username, 'password': password}
         database_table.createRecord(record_data)
+        showRecord()
     def deleteRecord():
         ID = user_inputs[0].get()
         database_table.deleteRecord(ID)
+        showRecord()
     def updateRecord():
         ID = user_inputs[0].get()
         website = user_inputs[1].get()
@@ -140,16 +142,30 @@ def mainScreen():
         password = user_inputs[3].get()
         record_data = {'ID': ID,'website': website, 'username': username, 'password': password}
         database_table.updateRecord(record_data)
+    def recordTree():
+        columns = ('ID', 'Website', 'Username', 'Password')
+        global record_tree
+        record_tree = ttk.Treeview(screen, columns=columns, show='headings')
+        record_tree.heading('ID', text="ID")
+        record_tree.heading('Website', text="Website")
+        record_tree.heading('Username', text="Username")
+        record_tree.heading('Password', text="Password")
+        record_tree['displaycolumns'] = ('ID', 'Website', 'Username', 'Password')
+        record_tree.grid()
     def showRecord():
+        for record in record_tree.get_children():
+            record_tree.delete(record)
         record_list = database_table.showRecord()
         for record in record_list:
-            print(record)
+            record_tree.insert('', END, values=(record[0], record[3], record[4], record[5]))
+            # If we use 1,2 instead of 3,4,5 we will get creation dates which we don't need
     def generatePassword():
         pass
 
     menuLabels()
     userInputs()
     createButtons()
+    recordTree()
 
 cursor.execute("SELECT * FROM master_password")
 if cursor.fetchall():
