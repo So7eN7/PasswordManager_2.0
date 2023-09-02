@@ -5,6 +5,14 @@ import hashlib
 from database import *
 import string
 import random
+import uuid
+import os
+import base64
+import pyperclip
+from cryptography.fernet import Fernet
+#from cryptography.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 database_table = Table()
 database_table.createTable()
@@ -13,7 +21,7 @@ screen.title("Password Manager")
 
 
 def hashPassword(input):
-    hashPass = hashlib.md5(input)
+    hashPass = hashlib.sha512(input)
     hashPass = hashPass.hexdigest()
     return hashPass
 
@@ -85,7 +93,7 @@ def mainScreen():
         widget.destroy()
 
     screen.geometry("900x600+50+50")
-    title = Label(screen, text="Password Manager", width=40, font=("Ariel", 20)).grid(columnspan=4, padx=140, pady=10)
+    title = Label(screen, text="Password Manager", width=40, font=("Harrington", 20)).grid(columnspan=4, padx=140, pady=10)
 
     screenFrame = ttk.Frame(screen, padding=50)
     screenFrame.grid()
@@ -125,6 +133,14 @@ def mainScreen():
                    command=button[2]).grid(padx=5, pady=10, column=column_num, row=row_num)
             column_num += 1
 
+    def showRecord():
+        for record in record_tree.get_children():
+            record_tree.delete(record)
+        record_list = database_table.showRecord()
+        for record in record_list:
+            record_tree.insert('', END, values=(record[0], record[3], record[4], record[5]))
+            # If we use 1,2 instead of 3,4,5 we will get creation dates which we don't need
+
     def saveRecord():
         website = user_inputs[1].get()
         username = user_inputs[2].get()
@@ -163,13 +179,6 @@ def mainScreen():
         record_tree.bind('<<TreeviewSelect>>', recordSelection)
 
         record_tree.grid()
-    def showRecord():
-        for record in record_tree.get_children():
-            record_tree.delete(record)
-        record_list = database_table.showRecord()
-        for record in record_list:
-            record_tree.insert('', END, values=(record[0], record[3], record[4], record[5]))
-            # If we use 1,2 instead of 3,4,5 we will get creation dates which we don't need
 
     def generatePassword():
         # From string module we set our letters/numbers/symbols
