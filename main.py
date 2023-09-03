@@ -9,10 +9,6 @@ import uuid
 import os
 import base64
 import pyperclip
-from cryptography.fernet import Fernet
-#from cryptography.backends import default_backend
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 database_table = Table()
 database_table.createTable()
@@ -26,6 +22,8 @@ def hashPassword(input):
     return hashPass
 
 def firstLogin():
+    for widget in screen.winfo_children():
+        widget.destroy()
     screen.geometry("400x200+50+50")
     label = Label(screen, text="Create Master Password")
     label.config(anchor=CENTER)
@@ -42,23 +40,49 @@ def firstLogin():
     repeatEntry.pack()
     repeatEntry.focus()
 
-    errorLabel = Label(screen)
-    errorLabel.pack()
-
     def savePassword():
         if passEntry.get() == repeatEntry.get():
+            reset = "DELETE FROM master_password WHERE id = 1"
+            cursor.execute(reset)
             passwordHash = hashPassword(passEntry.get().encode('utf-8'))
-            passwordInput = """INSERT INTO master_password(password) VALUES(?)"""
-            cursor.execute(passwordInput, [(passwordHash)])
+            auth_key = str(uuid.uuid4().hex)
+            auth_hash =hashPassword(auth_key.encode('utf-8'))
+
+            passwordInput = """INSERT INTO master_password(password, authentication_key) VALUES(?, ?)"""
+            cursor.execute(passwordInput, ((passwordHash), (auth_hash)))
             db.commit()
-            messagebox.showinfo(title="Success!", message="Password created successfully, please restart the app")
+            authScreen(auth_key)
         else:
-            errorLabel.config(text="Passwords do not match")
+            messagebox.showerror(title="Error", message="Passwords do not match.")
 
     button = Button(screen, text="Create", command=savePassword)
     button.pack(pady=10)
 
+def authScreen(auth_key):
+    for widget in screen.winfo_children():
+        widget.destroy()
+    screen.geometry("400x200+50+50")
+    label = Label(screen, text="Your authentication key: (Save it to recover your account)")
+    label.config(anchor=CENTER)
+    label.pack()
+
+    key_label = Label(screen, text=auth_key)
+    key_label.pack()
+
+    def copyKey():
+        pyperclip.copy(key_label.cget("text"))
+
+    button = Button(screen, text="Copy", command=copyKey)
+    button.pack(pady=10)
+
+    if copyKey():
+        messagebox.askokcancel(title="Are you sure?", message="Click ok after you are sure that you have saved the key")
+        if messagebox.askokcancel():
+            mainScreen()
+
 def loginScreen():
+    for widget in screen.winfo_children():
+        widget.destroy()
     screen.geometry("400x200+50+50")
     label = Label(screen, text="Enter Master Password")
     label.config(anchor=CENTER)
@@ -84,8 +108,33 @@ def loginScreen():
             passEntry.delete(0, 'end')
             passLabel.config(text="Wrong Password")
 
+    def resetPassword():
+        resetScreen()
+
     button = Button(screen, text="Login", command=checkPassword)
     button.pack(pady=10)
+
+    reset = Button(screen, text="Reset Password", command=resetPassword)
+    reset.pack(pady=10)
+
+def resetScreen():
+    for widget in screen.winfo_children():
+        widget.destroy()
+    screen.geometry("400x200+50+50")
+    label = Label(screen, text="Enter auth/recovery key:")
+    label.config(anchor=CENTER)
+    label.pack()
+
+    authEntry = Entry(screen, width=20)
+    authEntry.pack()
+
+    def authentication():
+        auth_key = hashPassword(str(authEntry.get()).encode('utf-8'))
+        cursor.execute("SELECT * FROM master_password WHERE id = 1 AND authentication_key = ?", [(auth_key)])
+        return cursor.fetchall()
+
+    if authentication():
+        firstLogin()
 
 def mainScreen():
 

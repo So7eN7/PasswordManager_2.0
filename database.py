@@ -8,7 +8,8 @@ cursor.execute\
 CREATE TABLE IF NOT EXISTS master_password
 (
 id INTEGER PRIMARY KEY,
-password TEXT NOT NULL
+password TEXT NOT NULL,
+authentication_key TEXT NOT NULL
 );
 """)
 
